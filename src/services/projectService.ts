@@ -2,7 +2,10 @@ import type { Project } from "../models/Project";
 
 const STORAGE_KEY = "projects"
 
+
 export const projectService = {
+  
+  
 
   getAll(): Project[] {
     const data = localStorage.getItem(STORAGE_KEY)
