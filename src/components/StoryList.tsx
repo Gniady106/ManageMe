@@ -1,9 +1,16 @@
+import { useState } from "react";
 import type { Status, Story } from "../models/Story";
+import type { Task } from "../models/Task";
+import { TaskService } from "../services/taskService";
+import { StoryService } from "../services/storyService";
+import { TaskForm } from "./TaskForm";
+import { TaskList } from "./TaskList";
 
 interface Props {
   stories: Story[];
   onDelete: (id: string) => void;
   onStatusChange: (story: Story, status: Status) => void;
+  onStoriesUpdate: () => void;
 }
 
 const PRIORITY_BADGE: Record<string, string> = {
@@ -24,13 +31,63 @@ const COLUMNS: { status: Status; title: string; color: string }[] = [
   { status: "done", title: "✅ Done", color: "bg-green-50 border-green-200" },
 ];
 
-const NEXT_STATUS: Record<Status, { label: string; next: Status } | null> = {
-  todo: { label: "Start →", next: "doing" },
-  doing: { label: "Complete →", next: "done" },
-  done: null,
-};
+export function StoryList({ stories, onDelete, onStatusChange, onStoriesUpdate }: Props) {
+  const [expandedStoryId, setExpandedStoryId] = useState<string | null>(null);
+  const [tasksMap, setTasksMap] = useState<Record<string, Task[]>>({});
 
-export function StoryList({ stories, onDelete, onStatusChange }: Props) {
+  function toggleStory(storyId: string) {
+    if (expandedStoryId === storyId) {
+      setExpandedStoryId(null);
+    } else {
+      setExpandedStoryId(storyId);
+      refreshTasks(storyId);
+    }
+  }
+
+  function refreshTasks(storyId: string) {
+    setTasksMap((prev) => ({
+      ...prev,
+      [storyId]: TaskService.getByStory(storyId),
+    }));
+  }
+
+  function handleAddTask(task: Task) {
+    TaskService.create(task);
+    refreshTasks(task.storyId);
+
+  
+  }
+
+  function handleDeleteTask(taskId: string, storyId: string) {
+    TaskService.delete(taskId);
+    refreshTasks(storyId);
+  }
+
+  function handleAssign(taskId: string, userId: string, storyId: string) {
+    TaskService.assign(taskId, userId);
+    refreshTasks(storyId);
+
+    // jeśli story było todo — zmieniamy na doing
+    const story = stories.find((s) => s.id === storyId);
+    if (story && story.status === "todo") {
+      onStatusChange(story, "doing");
+    }
+  }
+
+  function handleComplete(taskId: string, storyId: string) {
+    TaskService.complete(taskId);
+    refreshTasks(storyId);
+
+    
+    if (TaskService.allDoneForStory(storyId)) {
+      const story = stories.find((s) => s.id === storyId);
+      if (story) {
+        onStatusChange(story, "done");
+        onStoriesUpdate();
+      }
+    }
+  }
+
   if (stories.length === 0) {
     return (
       <p className="text-center text-gray-400 mt-4">
@@ -62,60 +119,75 @@ export function StoryList({ stories, onDelete, onStatusChange }: Props) {
               )}
 
               <div className="space-y-3">
-                {col.map((story) => (
-                  <div
-                    key={story.id}
-                    className="bg-white rounded-lg shadow-sm p-3 border border-gray-100"
-                  >
-                    <div className="flex justify-between items-start mb-1">
-                      <h4 className="font-semibold text-sm">{story.name}</h4>
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                          PRIORITY_BADGE[story.priority]
-                        }`}
+                {col.map((story) => {
+                  const isExpanded = expandedStoryId === story.id;
+                  const tasks = tasksMap[story.id] ?? [];
+
+                  return (
+                    <div
+                      key={story.id}
+                      className="bg-white rounded-lg shadow-sm border border-gray-100"
+                    >
+                     
+                      <div
+                        className="p-3 cursor-pointer"
+                        onClick={() => toggleStory(story.id)}
                       >
-                        {PRIORITY_LABEL[story.priority]}
-                      </span>
-                    </div>
+                        <div className="flex justify-between items-start mb-1">
+                          <h4 className="font-semibold text-sm flex-1">
+                            {story.name}
+                          </h4>
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded-full font-medium ml-1 ${PRIORITY_BADGE[story.priority]}`}
+                          >
+                            {PRIORITY_LABEL[story.priority]}
+                          </span>
+                        </div>
 
-                    {story.description && (
-                      <p className="text-xs text-gray-500 mb-2">
-                        {story.description}
-                      </p>
-                    )}
+                        {story.description && (
+                          <p className="text-xs text-gray-500 mb-2">
+                            {story.description}
+                          </p>
+                        )}
 
-                    <p className="text-xs text-gray-400 mb-2">
-                      {new Date(story.createdAt).toLocaleDateString("pl-PL")}
-                    </p>
+                        <div className="flex justify-between items-center">
+                          <p className="text-xs text-gray-400">
+                            {new Date(story.createdAt).toLocaleDateString("pl-PL")}
+                          </p>
+                          <span className="text-gray-400 text-xs">
+                            {isExpanded ? "▲ hide tasks" : "▼ show tasks"}
+                          </span>
+                        </div>
+                      </div>
 
-                    <div className="flex gap-2 flex-wrap">
-                      {NEXT_STATUS[story.status] && (
+                      
+                      <div className="px-3 pb-3 flex justify-end">
                         <button
-                          onClick={() =>
-                            onStatusChange(story, NEXT_STATUS[story.status]!.next)
-                          }
-                          className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded transition-colors"
+                          onClick={() => onDelete(story.id)}
+                          className="text-xs bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded transition-colors"
                         >
-                          {NEXT_STATUS[story.status]!.label}
+                          Delete story
                         </button>
+                      </div>
+
+                      {isExpanded && (
+                        <div className="border-t border-gray-100 p-3 bg-gray-50 rounded-b-lg">
+                          <TaskForm
+                            storyId={story.id}
+                            onAdd={handleAddTask}
+                          />
+                          <TaskList
+                            tasks={tasks}
+                            story={story}
+                            onDelete={(taskId) => handleDeleteTask(taskId, story.id)}
+                            onAssign={(taskId, userId) => handleAssign(taskId, userId, story.id)}
+                            onComplete={(taskId) => handleComplete(taskId, story.id)}
+                          />
+                        </div>
                       )}
-                      {story.status !== "todo" && (
-                        <button
-                          onClick={() => onStatusChange(story, "todo")}
-                          className="text-xs bg-gray-300 hover:bg-gray-400 text-gray-700 px-2 py-1 rounded transition-colors"
-                        >
-                          ← Reset
-                        </button>
-                      )}
-                      <button
-                        onClick={() => onDelete(story.id)}
-                        className="text-xs bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded transition-colors ml-auto"
-                      >
-                        Delete
-                      </button>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           );

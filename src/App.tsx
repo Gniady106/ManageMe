@@ -53,12 +53,11 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="bg-red-500 text-white p-10 text-4xl text-center mb-10 rounded-lg">
-          ManageMe
-        </h1>
-
-        <UserProfile></UserProfile>
+      <div className="max-w-8xl mx-auto">
+        <div className="flex items-center justify-between bg-red-500 text-white px-8 py-6 rounded-lg shadow-md mb-6">
+          <h1 className="text-4xl font-bold">ManageMe</h1>
+          <UserProfile />
+        </div>
 
         <ProjectForm onAdd={addProject} />
 
@@ -72,13 +71,6 @@ function App() {
         />
         {currentProjectId ? (
   <>
-    <StoryForm projectId={currentProjectId} onAdd={handleAddStory} />
-
-    <StoryList
-      stories={stories}
-      onDelete={handleDeleteStory}
-      onStatusChange={handleStatusChange}
-    />
   </>
 ) : (
   <p className="text-center mt-6">

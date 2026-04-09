@@ -1,17 +1,17 @@
-import { UserService } from "../services/userService"
-
+import { UserService } from "../services/userService";
 
 export default function UserProfile() {
   const user = UserService.getCurrentUser();
 
-  console.log("User profile rendered with user:", user)
   return (
-    <div className="bg-white p-6 rounded shadow max-w-md mx-auto mt-6">
-      <h2 className="text-xl font-bold mb-4">User profile</h2>
-
-      <p><b>Name:</b> {user.firstName}</p>
-      <p><b>Last name:</b> {user.lastName}</p>
-      <p><b>Email:</b> {user.email}</p>
+    <div className="flex items-center gap-3">
+      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white text-sm font-bold shrink-0">
+        {user.firstName[0]}{user.lastName[0]}
+      </div>
+      <div className="text-right">
+        <p className="font-semibold text-white text-sm">{user.firstName} {user.lastName}</p>
+        <p className="text-xs text-red-200">{user.email}</p>
+      </div>
     </div>
-  )
+  );
 }
