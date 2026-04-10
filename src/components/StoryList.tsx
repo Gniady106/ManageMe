@@ -97,102 +97,126 @@ export function StoryList({ stories, onDelete, onStatusChange, onStoriesUpdate }
   }
 
   return (
-    <div className="mt-6">
-      <h2 className="text-xl font-bold mb-4 text-center">User Stories</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {COLUMNS.map(({ status, title, color }) => {
-          const col = stories.filter((s) => s.status === status);
-          return (
-            <div
-              key={status}
-              className={`border-2 rounded-lg p-4 min-h-[150px] ${color}`}
-            >
-              <h3 className="font-semibold text-lg mb-3">
-                {title}{" "}
-                <span className="text-sm font-normal text-gray-500">
-                  ({col.length})
-                </span>
-              </h3>
+  <div className="mt-6">
+    <h2 className="text-xl font-bold mb-4 text-center text-gray-800 dark:text-gray-100">
+      User Stories
+    </h2>
 
-              {col.length === 0 && (
-                <p className="text-sm text-gray-400 italic">Empty</p>
-              )}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {COLUMNS.map(({ status, title, color }) => {
+        const col = stories.filter((s) => s.status === status);
 
-              <div className="space-y-3">
-                {col.map((story) => {
-                  const isExpanded = expandedStoryId === story.id;
-                  const tasks = tasksMap[story.id] ?? [];
+        return (
+          <div
+            key={status}
+            className={`border-2 rounded-lg p-4 min-h-[150px]
+              bg-gray-50 border-gray-200
+              dark:bg-gray-800 dark:border-gray-700`}
+          >
+            <h3 className="font-semibold text-lg mb-3 text-gray-800 dark:text-gray-100">
+              {title}{" "}
+              <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                ({col.length})
+              </span>
+            </h3>
 
-                  return (
+            {col.length === 0 && (
+              <p className="text-sm text-gray-400 italic">Empty</p>
+            )}
+
+            <div className="space-y-3">
+              {col.map((story) => {
+                const isExpanded = expandedStoryId === story.id;
+                const tasks = tasksMap[story.id] ?? [];
+
+                return (
+                  <div
+                    key={story.id}
+                    className="bg-white dark:bg-gray-900
+                               rounded-lg shadow-sm 
+                               border border-gray-100 dark:border-gray-700"
+                  >
+                 
                     <div
-                      key={story.id}
-                      className="bg-white rounded-lg shadow-sm border border-gray-100"
+                      className="p-3 cursor-pointer"
+                      onClick={() => toggleStory(story.id)}
                     >
-                     
-                      <div
-                        className="p-3 cursor-pointer"
-                        onClick={() => toggleStory(story.id)}
-                      >
-                        <div className="flex justify-between items-start mb-1">
-                          <h4 className="font-semibold text-sm flex-1">
-                            {story.name}
-                          </h4>
-                          <span
-                            className={`text-xs px-2 py-0.5 rounded-full font-medium ml-1 ${PRIORITY_BADGE[story.priority]}`}
-                          >
-                            {PRIORITY_LABEL[story.priority]}
-                          </span>
-                        </div>
+                      <div className="flex justify-between items-start mb-1">
+                        <h4 className="font-semibold text-sm flex-1 text-gray-800 dark:text-gray-100">
+                          {story.name}
+                        </h4>
 
-                        {story.description && (
-                          <p className="text-xs text-gray-500 mb-2">
-                            {story.description}
-                          </p>
-                        )}
-
-                        <div className="flex justify-between items-center">
-                          <p className="text-xs text-gray-400">
-                            {new Date(story.createdAt).toLocaleDateString("pl-PL")}
-                          </p>
-                          <span className="text-gray-400 text-xs">
-                            {isExpanded ? "▲ hide tasks" : "▼ show tasks"}
-                          </span>
-                        </div>
-                      </div>
-
-                      
-                      <div className="px-3 pb-3 flex justify-end">
-                        <button
-                          onClick={() => onDelete(story.id)}
-                          className="text-xs bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded transition-colors"
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded-full font-medium ml-1 
+                          ${PRIORITY_BADGE[story.priority]}
+                          dark:bg-opacity-20`}
                         >
-                          Delete story
-                        </button>
+                          {PRIORITY_LABEL[story.priority]}
+                        </span>
                       </div>
 
-                      {isExpanded && (
-                        <div className="border-t border-gray-100 p-3 bg-gray-50 rounded-b-lg">
-                          <TaskForm
-                            storyId={story.id}
-                            onAdd={handleAddTask}
-                          />
-                          <TaskList
-                            tasks={tasks}
-                            story={story}
-                            onDelete={(taskId) => handleDeleteTask(taskId, story.id)}
-                            onAssign={(taskId, userId) => handleAssign(taskId, userId, story.id)}
-                            onComplete={(taskId) => handleComplete(taskId, story.id)}
-                          />
-                        </div>
+                      {story.description && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                          {story.description}
+                        </p>
                       )}
+
+                      <div className="flex justify-between items-center">
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
+                          {new Date(story.createdAt).toLocaleDateString("pl-PL")}
+                        </p>
+
+                        <span className="text-gray-400 dark:text-gray-500 text-xs">
+                          {isExpanded ? "▲ hide tasks" : "▼ show tasks"}
+                        </span>
+                      </div>
                     </div>
-                  );
-                })}
-              </div>
+
+                    {/* DELETE BUTTON */}
+                    <div className="px-3 pb-3 flex justify-end">
+                      <button
+                        onClick={() => onDelete(story.id)}
+                        className="text-xs bg-red-400 hover:bg-red-500 
+                                   dark:bg-red-600 dark:hover:bg-red-700
+                                   text-white px-2 py-1 rounded transition-colors"
+                      >
+                        Delete story
+                      </button>
+                    </div>
+
+                    {/* TASKS */}
+                    {isExpanded && (
+                      <div
+                        className="border-t border-gray-100 dark:border-gray-700 
+                                   p-3 bg-gray-50 dark:bg-gray-800 rounded-b-lg"
+                      >
+                        <TaskForm
+                          storyId={story.id}
+                          onAdd={handleAddTask}
+                        />
+                        <TaskList
+                          tasks={tasks}
+                          story={story}
+                          onDelete={(taskId) =>
+                            handleDeleteTask(taskId, story.id)
+                          }
+                          onAssign={(taskId, userId) =>
+                            handleAssign(taskId, userId, story.id)
+                          }
+                          onComplete={(taskId) =>
+                            handleComplete(taskId, story.id)
+                          }
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
     </div>
-  );
+  </div>
+);
 }

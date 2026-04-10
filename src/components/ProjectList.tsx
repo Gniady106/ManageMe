@@ -87,9 +87,9 @@ export default function ProjectList({ projects, onDelete, onEdit }: Props) {
         return (
           <div
             key={project.id}
-            className={`bg-white rounded-lg shadow transition-all ${
+            className={`bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 rounded-lg shadow transition-all ${
               isExpanded
-                ? "border-2 border-green-500"
+                ? "border-2 border-gray-300"
                 : "border border-gray-200"
             }`}
           >
@@ -104,12 +104,20 @@ export default function ProjectList({ projects, onDelete, onEdit }: Props) {
                     onClick={(e) => e.stopPropagation()}
                   >
                     <input
-                      className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
+                      className="w-full p-2 border border border-gray-300 dark:border-gray-600 
+                 rounded 
+                 bg-white dark:bg-gray-900 
+                 text-gray-800 dark:text-gray-100
+                 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 "
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                     />
                     <input
-                      className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
+                      className="w-full p-2 border border-gray-300 dark:border-gray-600 
+                 rounded 
+                 bg-white dark:bg-gray-900 
+                 text-gray-800 dark:text-gray-100
+                 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 "
                       value={editDescription}
                       placeholder="Description"
                       onChange={(e) => setEditDescription(e.target.value)}
@@ -133,21 +141,21 @@ export default function ProjectList({ projects, onDelete, onEdit }: Props) {
                 {isEditing ? (
                   <button
                     onClick={(e) => saveEdit(project.id, e)}
-                    className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                    className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors"
                   >
                     Save
                   </button>
                 ) : (
                   <button
                     onClick={(e) => startEdit(project, e)}
-                    className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                    className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors"
                   >
                     Edit
                   </button>
                 )}
                 <button
                   onClick={(e) => handleDelete(project.id, e)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                  className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors"
                 >
                   Delete
                 </button>
@@ -158,7 +166,7 @@ export default function ProjectList({ projects, onDelete, onEdit }: Props) {
             </div>
 
             {isExpanded && (
-              <div className="border-t border-gray-100 p-4 bg-gray-50 rounded-b-lg">
+              <div className="border-t border-gray-100 p-4 bg-gray-50 dark:bg-gray-800 dark:border-gray-700 rounded-b-lg">
                 <StoryForm projectId={project.id} onAdd={handleAddStory} />
                 <StoryList
                   stories={stories}

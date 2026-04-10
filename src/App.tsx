@@ -4,6 +4,7 @@ import ProjectList from "./components/ProjectList";
 import UserProfile from "./components/UserProfile";
 import {StoryForm} from "./components/StoryForm";
 import { StoryList } from "./components/StoryList";
+import { DarkModeToggle } from "./components/DarkModeToggle";
 
 import { useProjects } from "./hooks/useProjects";
 import { ActiveProjectService } from "./services/activeProjectService";
@@ -39,7 +40,7 @@ function App() {
   const handleDeleteStory = (id: string) => {
   StoryService.delete(id);
 
-  // odśwież listę story dla aktualnego projektu
+  
   if (currentProjectId) {
     setStories(StoryService.getByProject(currentProjectId));
   }
@@ -52,12 +53,15 @@ function App() {
 };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-8xl mx-auto">
-        <div className="flex items-center justify-between bg-red-500 text-white px-8 py-6 rounded-lg shadow-md mb-6">
-          <h1 className="text-4xl font-bold">ManageMe</h1>
-          <UserProfile />
-        </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 p-8">
+      <div className="flex items-center justify-between bg-blue-500 dark:bg-blue-600 text-white px-8 py-6 rounded-lg shadow-md mb-6">
+  <h1 className="text-4xl font-bold">ManageMe</h1>
+
+  <div className="flex items-center gap-6">
+    <UserProfile />
+    <DarkModeToggle />
+  </div>
+</div>
 
         <ProjectForm onAdd={addProject} />
 
@@ -78,7 +82,7 @@ function App() {
   </p>
 )}
       </div>
-    </div>
+    
     
   );
 }

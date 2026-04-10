@@ -42,15 +42,15 @@ export function TaskList({ tasks, story, onDelete, onAssign, onComplete }: Props
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 bg">
         {COLUMNS.map(({ status, title, color }) => {
           const col = tasks.filter((t) => t.status === status);
           return (
             <div
               key={status}
-              className={`border-2 rounded-lg p-3 min-h-[100px] ${color}`}
+              className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 rounded-lg p-4 border  shadow-sm flex flex-col"
             >
-              <h4 className="font-semibold text-sm mb-2">
+              <h4 className="font-semibold text-sm mb-2 bg">
                 {title}{" "}
                 <span className="text-xs font-normal text-gray-500">
                   ({col.length})
@@ -70,10 +70,10 @@ export function TaskList({ tasks, story, onDelete, onAssign, onComplete }: Props
                   return (
                     <div
                       key={task.id}
-                      className="bg-white rounded-lg p-2 border border-gray-100 shadow-sm"
+                      className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg p-2 border border-gray-300 dark:border-gray-700 shadow-sm"
                     >
                       <div className="flex justify-between items-start mb-1">
-                        <p className="text-xs font-semibold text-gray-800 flex-1">
+                        <p className="text-xs font-semibold flex-1">
                           {task.name}
                         </p>
                         <span
@@ -96,13 +96,13 @@ export function TaskList({ tasks, story, onDelete, onAssign, onComplete }: Props
                       <div className="flex gap-1">
                         <button
                           onClick={() => setSelectedTask(task)}
-                          className="flex-1 text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded transition-colors"
+                          className="flex-1 text-xs bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-2 py-1 rounded transition-colors"
                         >
                           Details
                         </button>
                         <button
                           onClick={() => onDelete(task.id)}
-                          className="text-xs bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded transition-colors"
+                          className="text-xs bg-red-400 hover:bg-red-500 dark:bg-red-600 dark:hover:bg-red-700 text-white px-2 py-1 rounded transition-colors"
                         >
                           ✕
                         </button>

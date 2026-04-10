@@ -37,12 +37,18 @@ export function TaskForm({ storyId, onAdd }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mt-4"
+      className="bg-white dark:bg-gray-800
+                border border-gray-300 dark:border-gray-700
+       p-4 rounded-lg shadow-sm border border-gray-100 mt-4"
     >
       <h3 className="text-lg font-bold mb-3">Add Task</h3>
 
       <input
-        className="w-full mb-2 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+        className="w-full mb-2 p-2 border border border-gray-300 dark:border-gray-600 
+                 rounded 
+                 bg-white dark:bg-gray-900 
+                 text-gray-800 dark:text-gray-100
+                 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
         placeholder="Task name"
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -50,7 +56,11 @@ export function TaskForm({ storyId, onAdd }: Props) {
       />
 
       <textarea
-        className="w-full mb-2 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+        className="w-full mb-2 p-2 border border border-gray-300 dark:border-gray-600 
+                 rounded 
+                 bg-white dark:bg-gray-900 
+                 text-gray-800 dark:text-gray-100
+                 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
         placeholder="Description"
         rows={2}
         value={description}
@@ -59,7 +69,11 @@ export function TaskForm({ storyId, onAdd }: Props) {
 
       <div className="flex gap-2 mb-3">
         <select
-          className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+          className="flex-1 p-2 border border border-gray-300 dark:border-gray-600 
+                 rounded 
+                 bg-white dark:bg-gray-900 
+                 text-gray-800 dark:text-gray-100
+                 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
           value={priority}
           onChange={(e) => setPriority(e.target.value as TaskPriority)}
         >
@@ -71,7 +85,11 @@ export function TaskForm({ storyId, onAdd }: Props) {
         <input
           type="number"
           min={1}
-          className="w-32 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+          className="w-32 p-2 border border border-gray-300 dark:border-gray-600 
+                 rounded 
+                 bg-white dark:bg-gray-900 
+                 text-gray-800 dark:text-gray-100
+                 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
           placeholder="Est. hours"
           value={estimatedHours}
           onChange={(e) => setEstimatedHours(Number(e.target.value))}
@@ -80,7 +98,7 @@ export function TaskForm({ storyId, onAdd }: Props) {
 
       <button
         type="submit"
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded transition-colors text-sm"
+        className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold py-2 rounded transition-colors text-sm"
       >
         Add Task
       </button>
