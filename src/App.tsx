@@ -4,18 +4,46 @@ import ProjectList from "./components/ProjectList";
 import UserProfile from "./components/UserProfile";
 import {StoryForm} from "./components/StoryForm";
 import { StoryList } from "./components/StoryList";
+import { Mail } from "lucide-react";
 import { DarkModeToggle } from "./components/DarkModeToggle";
-
 import { useProjects } from "./hooks/useProjects";
 import { ActiveProjectService } from "./services/activeProjectService";
 import { StoryService } from "./services/storyService";
-
 import type { Story, Status } from "./models/Story";
+import { NotificationList } from "./components/NotificationList";
+import { NotificationDetail } from "./components/NotificationDetail";
+import { NotificationPopup } from "./components/NotificationPopup";
+import { NotificationTriggers } from "./services/notificationTriggers";
+import { useNotifications } from "./context/NotificationContext";
+import type { Notification } from "./models/Notifications";
+
+
+type View = "projects" | "notifications";
 
 function App() {
   const activeProjectId = ActiveProjectService.getActiveProjectId();
 
   const [stories, setStories] = useState<Story[]>([]);
+  const { projects, addProject, deleteProject, updateProject } = useProjects();
+  const { pushPopup, refresh } = useNotifications();
+  const [view, setView] = useState<View>("projects");
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+
+function handleAddProject(project: Parameters<typeof addProject>[0]) {
+    addProject(project);
+    const sent = NotificationTriggers.onProjectCreated(project.name);
+    pushPopup(sent);
+    refresh();
+  }
+
+  function handleSelectNotification(n: Notification) {
+    setSelectedNotification(n);
+  }
+
+  function handleBackToList() {
+    setSelectedNotification(null);
+    refresh();
+  }
 
   useEffect(() => {
     if (activeProjectId) {
@@ -32,7 +60,6 @@ function App() {
     setStories(StoryService.getByProject(story.projectId));
   };
 
-  const { projects, addProject, deleteProject, updateProject } = useProjects();
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(
     ActiveProjectService.getActiveProjectId(),
   );
@@ -51,39 +78,59 @@ function App() {
   StoryService.update(updated);
   setStories(StoryService.getByProject(story.projectId));
 };
+  
 
-  return (
+ return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-800 p-8">
-      <div className="flex items-center justify-between bg-blue-500 dark:bg-blue-600 text-white px-8 py-6 rounded-lg shadow-md mb-6">
-  <h1 className="text-4xl font-bold">ManageMe</h1>
+      <div className="max-w-8xl mx-auto">
 
-  <div className="flex items-center gap-6">
-    <UserProfile />
-    <DarkModeToggle />
-  </div>
-</div>
+        {/* Header */}
+        <div className="flex items-center justify-between bg-blue-500 dark:bg-blue-600 text-white px-8 py-6 rounded-lg shadow-md mb-6">
+          <h1
+            className="text-4xl font-bold cursor-pointer"
+            onClick={() => { setView("projects"); setSelectedNotification(null); }}
+          >
+            ManageMe
+          </h1>
+                <div className="flex items-center gap-6">
+            <button
+              onClick={() => { setView("notifications"); setSelectedNotification(null); }}
+              className="text-sm text-white/80 hover:text-white transition-colors"
+            >
+              <Mail size={20} />
+            </button>
+            <UserProfile onOpenNotifications={() => { setView("notifications"); setSelectedNotification(null); }} />
+            <DarkModeToggle />
+          </div>
+        </div>
 
-        <ProjectForm onAdd={addProject} />
+        {view === "projects" && (
+          <>
+            <ProjectForm onAdd={handleAddProject} />
+            <ProjectList
+              projects={projects}
+              onDelete={deleteProject}
+              onEdit={updateProject}
+            />
+          </>
+        )}
 
-
-        <ProjectList
-          projects={projects}
-          onDelete={deleteProject}
-          onEdit={updateProject}
-          currentProjectId={currentProjectId}
-          onSelectProject={handleSelectProject}
-        />
-        {currentProjectId ? (
-  <>
-  </>
-) : (
-  <p className="text-center mt-6">
-    Select a project to see stories
-  </p>
-)}
+        {view === "notifications" && (
+          <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow p-6">
+            {selectedNotification ? (
+              <NotificationDetail
+                notification={selectedNotification}
+                onBack={handleBackToList}
+              />
+            ) : (
+              <NotificationList onSelect={handleSelectNotification} />
+            )}
+          </div>
+        )}
       </div>
-    
-    
+
+      <NotificationPopup />
+    </div>
   );
 }
 

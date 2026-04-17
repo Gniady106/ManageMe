@@ -4,6 +4,8 @@ import type { Story, Status } from "../models/Story";
 import { StoryService } from "../services/storyService";
 import { StoryForm } from "./StoryForm";
 import { StoryList } from "./StoryList";
+import { NotificationTriggers } from "../services/notificationTriggers";
+import { useNotifications } from "../context/NotificationContext";
 
 interface Props {
   projects: Project[];
@@ -17,6 +19,7 @@ export default function ProjectList({ projects, onDelete, onEdit }: Props) {
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [storiesMap, setStoriesMap] = useState<Record<string, Story[]>>({});
+  const { pushPopup, refresh } = useNotifications();
 
   function toggleExpand(id: string) {
     if (expandedId === id) {
@@ -59,6 +62,7 @@ export default function ProjectList({ projects, onDelete, onEdit }: Props) {
   function handleAddStory(story: Story) {
     StoryService.create(story);
     refreshStories(story.projectId);
+   
   }
 
   function handleDeleteStory(id: string, projectId: string) {
