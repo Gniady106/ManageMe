@@ -79,6 +79,15 @@ export const NotificationTriggers = {
       "low"
     );
   },
+  
+  onNewUserRegistered(fullName: string, email: string): Notification[] {
+  return sendToMany(
+    getAdminIds(),
+    "New user registered",
+    `${fullName} (${email}) has created an account and is waiting for approval.`,
+    "high"
+  );
+},
 
 
   onTaskDone(taskName: string, storyName: string, ownerId: string): Notification[] {
